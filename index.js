@@ -13,8 +13,19 @@ app.get('/', (req, res) => {
 });
 
 /* Connect MongoDB */
-let mongoURI = process.env.MONGO_URI;
+const mongoURI = process.env.MONGO_URI;
 mongoose.connect(mongoURI, {useNewUrlParser: true, useUnifiedTopology: true});
+
+
+/* Check MongoDb Connection Status */
+app.get("/mongo-status", (req, res) => {
+  res.json({ status: mongoose.connection.readyState });
+      /* MongoDB 'status:
+            0: disconnected;
+            1: connected;
+            2: connecting;
+            3: disconnecting; */
+});
 
 
 const listener = app.listen(process.env.PORT || 3000, () => {
