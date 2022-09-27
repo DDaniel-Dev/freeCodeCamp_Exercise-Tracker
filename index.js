@@ -41,6 +41,22 @@ app.get("/mongo-status", (req, res) => {
 });
 
 
+// -- POST request to /api/users with form data username to create new users; includes _id -- //
+app.post("/api/users", (req, res) => {
+  const username = req.body.username
+  const user = new User({ username })
+  user.save((err, data) => {
+    if (err) {
+      res.json({ error: err})
+    } else {
+      res.json(data)
+    };
+  })
+});
+
+
+
+
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
 })
