@@ -24,7 +24,13 @@ const userSchema = new Schema({
   username: {
     type: String,
     require: true
-  }
+  },
+  logs: [{
+    date: String,
+    duration: Number,
+    description: String
+  }],
+  count: Number
 });
 
 const User = mongoose.model("User", userSchema);
@@ -62,7 +68,32 @@ app.route("/api/users")
         res.json(data)
       }
     })
-  })
+  });
+
+// -- POST request to database, and response with new User exercise Objects -- //
+app.post("/api/users/:_id/exercises", (req, res) => {
+  const { description } = req.body;
+  const duration = parseInt(req.body.duration)
+  const date = req.body.date ? "Mon Jan 01 1990" : new Date().toDateString();
+  const id = req.params._id;
+  const exercise = {
+        date,  
+        duration,
+        description,
+      }
+  User.findByIdAndUpdate(id, { $push: { logs: exercise } }, 
+    { new: true},
+    (err, user) => {
+      if (user) {
+        const updatedExercise = {
+          _id: id,
+          username: user.username,
+          ...exercise
+        };
+        res.json(updatedExercise)
+      }
+    })
+});
 
 
 
