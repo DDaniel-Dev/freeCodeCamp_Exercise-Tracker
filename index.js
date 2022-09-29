@@ -29,6 +29,16 @@ const logSchema = new Schema({
 
 
 
+// Models
+const UserInfo = mongoose.model("userInfo", userSchema);
+const ExerciseInfo = mongoose.model("exerciseInfo", exerciseSchema);
+const LogInfo = mongoose.model("logInfo", logSchema);
+
+
+
+
+
+
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
 })
