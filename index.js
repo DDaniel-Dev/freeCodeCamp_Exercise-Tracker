@@ -7,6 +7,15 @@ const cors = require('cors')
 require('dotenv').config()
 
 
+// Middleware
+app.use(express.urlencoded({ extended: false }))
+app.use(cors())
+app.use(express.static('public'))
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/views/index.html')
+});
+
+
 // Schemas //
 const { Schema } = require('mongoose');
 
@@ -56,19 +65,10 @@ mongoose.connect(mongodb_URL, {
 );
 
 
-
-// Middleware
-app.use(express.urlencoded({ extended: false }))
-app.use(cors())
-app.use(express.static('public'))
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/views/index.html')
-});
-
-
 // Api Endpoints //
 
-  // #1. POST request creating new username, and response with objects username & _id
+  /* -- #1. POST request creating new username, 
+      and response with objects username & _id -- */
 app.post("/api/users", (req, res) => {
   UserInfo.find({ "username": req.body.username }, (err, userData) => {
     if (err) {
@@ -76,8 +76,8 @@ app.post("/api/users", (req, res) => {
     } else {
       if (userData.length === 0) {
         const test = new UserInfo({
-          "_id": req.body.id,
           "username": req.body.username,
+          "_id": req.body.id,
         })
 
         test.save((err, data) => {
@@ -85,8 +85,8 @@ app.post("/api/users", (req, res) => {
             console.log("Error saving data => ", err)
           } else {
             res.json({
-              "_id": data.id,
               "username": data.username,
+              "_id": data.id,
             })
           }
         })
@@ -97,6 +97,17 @@ app.post("/api/users", (req, res) => {
   })
 });
 
+
+  /* -- #2. GET request to list ALL available Users data -- */ 
+app.get("/api/users", (req, res) => {
+  UserInfo.find({}, (err, allUsersData) => {
+    if (err) {
+      res.send("No Existing Users")
+    } else {
+      res.json(allUsersData)
+    }
+  })
+});
 
 
 
