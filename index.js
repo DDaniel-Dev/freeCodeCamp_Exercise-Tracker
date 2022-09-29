@@ -7,7 +7,7 @@ const cors = require('cors')
 require('dotenv').config()
 
 
-// Schemas
+// Schemas //
 const { Schema } = require('mongoose');
 
 const userSchema = new Schema({
@@ -28,14 +28,20 @@ const logSchema = new Schema({
 });
 
 
-
-// Models
+// Models //
 const UserInfo = mongoose.model("userInfo", userSchema);
 const ExerciseInfo = mongoose.model("exerciseInfo", exerciseSchema);
 const LogInfo = mongoose.model("logInfo", logSchema);
 
 
-
+// Config //
+const mongodb_URL = process.env('MONGO_URL');
+mongoose.connect(mongodb_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true 
+}, 
+  () => {console.log("Connected to MongoDatabase")}
+);
 
 
 
