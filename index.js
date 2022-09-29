@@ -68,7 +68,7 @@ mongoose.connect(mongodb_URL, {
 // Api Endpoints //
 
   /* -- #1. POST request creating new username, 
-      and response with objects username & _id -- */
+          and response with Objects username & _id -- */
 app.post("/api/users", (req, res) => {
   UserInfo.find({ "username": req.body.username }, (err, userData) => {
     if (err) {
@@ -99,15 +99,61 @@ app.post("/api/users", (req, res) => {
 
 
   /* -- #2. GET request to list ALL available Users data -- */ 
-app.get("/api/users", (req, res) => {
-  UserInfo.find({}, (err, allUsersData) => {
-    if (err) {
-      res.send("No Existing Users")
-    } else {
-      res.json(allUsersData)
-    }
+  app.get('/api/users', (req, res) => {
+    UserInfo.find({}, (err, data) => {
+      if (err) {
+        res.send("No Users");
+      } else {
+        res.json(data);
+      }
+    })
   })
-});
+  
+  
+  /* -- #3. POST request to update and return the User's exercises data -- */
+  app.post('/api/users/:_id/exercises', (req, res) => {
+    let idJson = { "id": req.params._id};
+    let checkedDate = new Date(req.body.date);
+    let idToCheck = idJson.id;
+  
+    let noDateHandler = () => {
+      if (checkedDate instanceof Date && !isNaN(checkedDate)) {
+        return checkedDate
+      } else {
+        checkedDate = new Date();
+      }
+    }
+  
+    UserInfo.findById(idToCheck, (err, data) => {
+      noDateHandler(checkedDate);
+  
+      if (err) {
+        console.log("error with id=> ", err);
+      } else {
+        const test = new ExerciseInfo({
+          "username": data.username,
+          "description": req.body.description,
+          "duration": req.body.duration,
+          "date": checkedDate.toDateString(),
+        })
+  
+        test.save((err, data) => {
+          if (err) {
+            console.log("error saving=> ", err);
+          } else {
+            console.log("saved exercise successfully");
+            res.json({
+              "_id": idToCheck,
+              "username": data.username,
+              "description": data.description,
+              "duration": data.duration,
+              "date": data.date.toDateString(),
+            })
+          }
+        })
+      }
+    })
+  })
 
 
 
